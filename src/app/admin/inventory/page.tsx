@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useMemo, useState, useEffect } from "react";
 import { useAdmin } from "../../../context/AdminContext";
@@ -55,8 +57,8 @@ export default function AdminInventoryPage() {
     setError(null);
     try {
       const url = activeBranch === "all" 
-        ? "http://localhost:5000/api/inventory"
-        : `http://localhost:5000/api/inventory?branchId=${activeBranch}`;
+        ? API_BASE_URL + "/api/inventory"
+        : `${API_BASE_URL}/api/inventory?branchId=${activeBranch}`;
         
       const res = await fetch(url);
       if (!res.ok) {
@@ -117,7 +119,7 @@ export default function AdminInventoryPage() {
     setAdjustError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/inventory/adjust", {
+      const res = await fetch(API_BASE_URL + "/api/inventory/adjust", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +174,7 @@ export default function AdminInventoryPage() {
     setTransferError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/inventory/transfer", {
+      const res = await fetch(API_BASE_URL + "/api/inventory/transfer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

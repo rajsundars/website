@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useMemo, useState, useEffect } from "react";
 import { useAdmin } from "../../../context/AdminContext";
@@ -94,8 +96,8 @@ export default function AdminBillingPage() {
     setError(null);
     try {
       const url = activeBranch === "all"
-        ? "http://localhost:5000/api/billing/invoices"
-        : `http://localhost:5000/api/billing/invoices?branchId=${activeBranch}`;
+        ? API_BASE_URL + "/api/billing/invoices"
+        : `${API_BASE_URL}/api/billing/invoices?branchId=${activeBranch}`;
         
       const res = await fetch(url);
       if (!res.ok) {
@@ -127,12 +129,12 @@ export default function AdminBillingPage() {
 
     try {
       const targetBranch = activeBranch === "all" ? (user?.branchId || "b1") : activeBranch;
-      const invRes = await fetch(`http://localhost:5000/api/inventory?branchId=${targetBranch}`);
+      const invRes = await fetch(`${API_BASE_URL}/api/inventory?branchId=${targetBranch}`);
       if (!invRes.ok) throw new Error("Failed to load inventory stock for checkout.");
       const invData = await invRes.json();
       setPosProducts(invData);
 
-      const promoRes = await fetch("http://localhost:5000/api/billing/discounts");
+      const promoRes = await fetch(API_BASE_URL + "/api/billing/discounts");
       if (promoRes.ok) {
         const promoData = await promoRes.json();
         setDiscounts(promoData);
@@ -224,7 +226,7 @@ export default function AdminBillingPage() {
 
   const downloadInvoice = async (invoiceId: string, invoiceNumber: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/billing/invoice/${invoiceId}/pdf`, {
+      const res = await fetch(`${API_BASE_URL}/api/billing/invoice/${invoiceId}/pdf`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -264,7 +266,7 @@ export default function AdminBillingPage() {
     setCheckoutError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/billing/checkout", {
+      const res = await fetch(API_BASE_URL + "/api/billing/checkout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

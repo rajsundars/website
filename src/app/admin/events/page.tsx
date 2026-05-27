@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useMemo, useState, useEffect } from "react";
 import { useAdmin } from "../../../context/AdminContext";
@@ -131,8 +133,8 @@ export default function AdminEventsPage() {
     setError(null);
     try {
       const url = activeBranch === "all"
-        ? "http://localhost:5000/api/events"
-        : `http://localhost:5000/api/events?branchId=${activeBranch}`;
+        ? API_BASE_URL + "/api/events"
+        : `${API_BASE_URL}/api/events?branchId=${activeBranch}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to load events.");
       const data = await res.json();
@@ -148,7 +150,7 @@ export default function AdminEventsPage() {
     try {
       // Fetch catalog products and their branch stocks
       const branchId = eventDetails?.branch_id || activeBranch || "b1";
-      const res = await fetch(`http://localhost:5000/api/inventory?branchId=${branchId === "all" ? "b1" : branchId}`);
+      const res = await fetch(`${API_BASE_URL}/api/inventory?branchId=${branchId === "all" ? "b1" : branchId}`);
       if (res.ok) {
         const data = await res.json();
         // Mapped structure
@@ -170,7 +172,7 @@ export default function AdminEventsPage() {
 
   const fetchEmployees = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/employees");
+      const res = await fetch(API_BASE_URL + "/api/employees");
       if (res.ok) {
         const data = await res.json();
         setEmployees(data);
@@ -195,7 +197,7 @@ export default function AdminEventsPage() {
     setShowManageModal(true);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${eventId}/details`);
+      const res = await fetch(`${API_BASE_URL}/api/events/${eventId}/details`);
       if (!res.ok) throw new Error("Failed to load event details.");
       const data = await res.json();
       setEventDetails(data);
@@ -218,7 +220,7 @@ export default function AdminEventsPage() {
     setStatusSubmitting(true);
     setStatusError(null);
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${selectedEventId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -269,7 +271,7 @@ export default function AdminEventsPage() {
         ];
       }
 
-      const res = await fetch(`http://localhost:5000/api/events/${selectedEventId}/wines`, {
+      const res = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/wines`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -282,7 +284,7 @@ export default function AdminEventsPage() {
       if (!res.ok) throw new Error(data.message || "Failed to reserve wines.");
 
       // Re-fetch details to sync lists and inventories
-      const detailsRes = await fetch(`http://localhost:5000/api/events/${selectedEventId}/details`);
+      const detailsRes = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/details`);
       const updatedDetails = await detailsRes.json();
       setEventDetails(updatedDetails);
       fetchInventory();
@@ -303,7 +305,7 @@ export default function AdminEventsPage() {
         .filter(w => w.product_id !== prodId)
         .map(w => ({ productId: w.product_id, quantity: w.quantity }));
 
-      const res = await fetch(`http://localhost:5000/api/events/${selectedEventId}/wines`, {
+      const res = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/wines`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -316,7 +318,7 @@ export default function AdminEventsPage() {
       if (!res.ok) throw new Error(data.message || "Failed to update wine reservations.");
 
       // Re-fetch details
-      const detailsRes = await fetch(`http://localhost:5000/api/events/${selectedEventId}/details`);
+      const detailsRes = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/details`);
       const updatedDetails = await detailsRes.json();
       setEventDetails(updatedDetails);
       fetchInventory();
@@ -346,7 +348,7 @@ export default function AdminEventsPage() {
         selectedEmployee
       ];
 
-      const res = await fetch(`http://localhost:5000/api/events/${selectedEventId}/staff`, {
+      const res = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/staff`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -359,7 +361,7 @@ export default function AdminEventsPage() {
       if (!res.ok) throw new Error(data.message || "Failed to assign staff.");
 
       // Re-fetch details
-      const detailsRes = await fetch(`http://localhost:5000/api/events/${selectedEventId}/details`);
+      const detailsRes = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/details`);
       const updatedDetails = await detailsRes.json();
       setEventDetails(updatedDetails);
     } catch (err: any) {
@@ -379,7 +381,7 @@ export default function AdminEventsPage() {
         .filter(s => s.userId !== staffId)
         .map(s => s.userId);
 
-      const res = await fetch(`http://localhost:5000/api/events/${selectedEventId}/staff`, {
+      const res = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/staff`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -392,7 +394,7 @@ export default function AdminEventsPage() {
       if (!res.ok) throw new Error(data.message || "Failed to unassign staff.");
 
       // Re-fetch details
-      const detailsRes = await fetch(`http://localhost:5000/api/events/${selectedEventId}/details`);
+      const detailsRes = await fetch(`${API_BASE_URL}/api/events/${selectedEventId}/details`);
       const updatedDetails = await detailsRes.json();
       setEventDetails(updatedDetails);
     } catch (err: any) {
@@ -404,7 +406,7 @@ export default function AdminEventsPage() {
 
   const handleDownloadQuotation = async (eventId: string, clientName: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/events/${eventId}/quotation/pdf`);
+      const res = await fetch(`${API_BASE_URL}/api/events/${eventId}/quotation/pdf`);
       if (!res.ok) throw new Error("Could not stream quotation PDF.");
       const blob = await res.blob();
       const fileUrl = window.URL.createObjectURL(blob);
@@ -434,7 +436,7 @@ export default function AdminEventsPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/events/enquire", {
+      const res = await fetch(API_BASE_URL + "/api/events/enquire", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

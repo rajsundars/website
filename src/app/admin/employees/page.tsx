@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useMemo, useState, useEffect } from "react";
 import { useAdmin } from "../../../context/AdminContext";
@@ -95,8 +97,8 @@ export default function AdminEmployeesPage() {
     setRosterError(null);
     try {
       const url = activeBranch === "all"
-        ? "http://localhost:5000/api/employees"
-        : `http://localhost:5000/api/employees?branchId=${activeBranch}`;
+        ? API_BASE_URL + "/api/employees"
+        : `${API_BASE_URL}/api/employees?branchId=${activeBranch}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to load roster.");
       const data = await res.json();
@@ -111,7 +113,7 @@ export default function AdminEmployeesPage() {
   const fetchShifts = async () => {
     setShiftsLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/employees/shifts");
+      const res = await fetch(API_BASE_URL + "/api/employees/shifts");
       if (res.ok) {
         const data = await res.json();
         setShifts(data);
@@ -126,7 +128,7 @@ export default function AdminEmployeesPage() {
   const fetchPayroll = async () => {
     setPayrollLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/employees/payroll");
+      const res = await fetch(API_BASE_URL + "/api/employees/payroll");
       if (res.ok) {
         const data = await res.json();
         setPayroll(data);
@@ -164,7 +166,7 @@ export default function AdminEmployeesPage() {
     setCrudError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/employees", {
+      const res = await fetch(API_BASE_URL + "/api/employees", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -208,7 +210,7 @@ export default function AdminEmployeesPage() {
     setCrudError(null);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/employees/${editingEmp.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/employees/${editingEmp.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -248,7 +250,7 @@ export default function AdminEmployeesPage() {
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/employees/${empId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/employees/${empId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -269,7 +271,7 @@ export default function AdminEmployeesPage() {
   const handleShiftChange = async (userId: string, date: string, type: string) => {
     setShiftUpdatingId(`${userId}_${date}`);
     try {
-      const res = await fetch("http://localhost:5000/api/employees/shifts", {
+      const res = await fetch(API_BASE_URL + "/api/employees/shifts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -293,7 +295,7 @@ export default function AdminEmployeesPage() {
     setPayrollError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/employees/payroll/process", {
+      const res = await fetch(API_BASE_URL + "/api/employees/payroll/process", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -319,7 +321,7 @@ export default function AdminEmployeesPage() {
 
   const downloadPayslip = async (payrollId: string, employeeName: string, month: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/employees/payroll/${payrollId}/payslip`, {
+      const res = await fetch(`${API_BASE_URL}/api/employees/payroll/${payrollId}/payslip`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }

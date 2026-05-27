@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useAdmin } from "../../context/AdminContext";
@@ -89,8 +91,8 @@ export default function AdminDashboard() {
     setError(null);
     try {
       const url = activeBranch === "all"
-        ? "http://localhost:5000/api/reports/dashboard"
-        : `http://localhost:5000/api/reports/dashboard?branchId=${activeBranch}`;
+        ? API_BASE_URL + "/api/reports/dashboard"
+        : `${API_BASE_URL}/api/reports/dashboard?branchId=${activeBranch}`;
       
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to load dashboard report.");
@@ -109,7 +111,7 @@ export default function AdminDashboard() {
 
   const handleExportCSV = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/reports/sales/csv?branchId=${activeBranch}`);
+      const res = await fetch(`${API_BASE_URL}/api/reports/sales/csv?branchId=${activeBranch}`);
       if (!res.ok) throw new Error("Could not download CSV report.");
       const blob = await res.blob();
       const fileUrl = window.URL.createObjectURL(blob);
@@ -127,7 +129,7 @@ export default function AdminDashboard() {
 
   const handleExportPDF = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/reports/sales/pdf?branchId=${activeBranch}`);
+      const res = await fetch(`${API_BASE_URL}/api/reports/sales/pdf?branchId=${activeBranch}`);
       if (!res.ok) throw new Error("Could not download PDF report.");
       const blob = await res.blob();
       const fileUrl = window.URL.createObjectURL(blob);
@@ -145,7 +147,7 @@ export default function AdminDashboard() {
 
   const handleDownloadInvoice = async (invoiceId: string, invoiceNumber: string) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/billing/invoice/${invoiceId}/pdf`);
+      const res = await fetch(`${API_BASE_URL}/api/billing/invoice/${invoiceId}/pdf`);
       if (!res.ok) throw new Error("Could not stream invoice PDF.");
       const blob = await res.blob();
       const fileUrl = window.URL.createObjectURL(blob);

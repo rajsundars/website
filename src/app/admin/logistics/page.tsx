@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useMemo, useState, useEffect } from "react";
 import { useAdmin } from "../../../context/AdminContext";
@@ -59,14 +61,14 @@ export default function AdminLogisticsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("http://localhost:5000/api/logistics/shipments");
+      const res = await fetch(API_BASE_URL + "/api/logistics/shipments");
       if (!res.ok) {
         throw new Error("Failed to load shipments history.");
       }
       const data = await res.json();
       setShipments(data);
 
-      const expRes = await fetch("http://localhost:5000/api/logistics/expenses");
+      const expRes = await fetch(API_BASE_URL + "/api/logistics/expenses");
       if (expRes.ok) {
         const expData = await expRes.json();
         setGlobalExpenses(expData.totalExpense || 0);
@@ -80,7 +82,7 @@ export default function AdminLogisticsPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/inventory/products");
+      const res = await fetch(API_BASE_URL + "/api/inventory/products");
       if (res.ok) {
         const data = await res.json();
         setProducts(data);
@@ -117,7 +119,7 @@ export default function AdminLogisticsPage() {
     setActionLoadingId(shipmentId);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:5000/api/logistics/shipments/${shipmentId}`, {
+      const res = await fetch(`${API_BASE_URL}/api/logistics/shipments/${shipmentId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +167,7 @@ export default function AdminLogisticsPage() {
         quantity: logQty ? parseInt(logQty) : null
       };
 
-      const res = await fetch("http://localhost:5000/api/logistics/shipments", {
+      const res = await fetch(API_BASE_URL + "/api/logistics/shipments", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

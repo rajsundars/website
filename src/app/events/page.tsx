@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useState, useEffect } from "react";
 import PublicHeader from "../../components/PublicHeader";
@@ -82,7 +84,7 @@ export default function EventsPage() {
       setSubmitting(true);
       setSubmitError(null);
       try {
-        const res = await fetch("http://localhost:5000/api/events/enquire", {
+        const res = await fetch(API_BASE_URL + "/api/events/enquire", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

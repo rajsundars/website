@@ -1,4 +1,6 @@
 "use client";
+import { API_BASE_URL } from "@/config";
+
 
 import React, { useMemo, useState, useEffect } from "react";
 import { useAdmin } from "../../../context/AdminContext";
@@ -101,8 +103,8 @@ export default function AdminCustomersPage() {
     setError(null);
     try {
       const url = search 
-        ? `http://localhost:5000/api/customers?q=${encodeURIComponent(search)}`
-        : "http://localhost:5000/api/customers";
+        ? `${API_BASE_URL}/api/customers?q=${encodeURIComponent(search)}`
+        : API_BASE_URL + "/api/customers";
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to retrieve customers directory.");
       const data = await res.json();
@@ -136,7 +138,7 @@ export default function AdminCustomersPage() {
     setCrudError(null);
 
     try {
-      const res = await fetch("http://localhost:5000/api/customers", {
+      const res = await fetch(API_BASE_URL + "/api/customers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -172,7 +174,7 @@ export default function AdminCustomersPage() {
     setCrudError(null);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/customers/${editingCust.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/customers/${editingCust.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -205,7 +207,7 @@ export default function AdminCustomersPage() {
   const handleDeleteCust = async (id: string) => {
     if (!confirm("Are you sure you want to delete this customer record?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/customers/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/customers/${id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -255,7 +257,7 @@ export default function AdminCustomersPage() {
     setNotifySuccess(false);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/customers/${selectedCust.id}/notify`, {
+      const res = await fetch(`${API_BASE_URL}/api/customers/${selectedCust.id}/notify`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -287,7 +289,7 @@ export default function AdminCustomersPage() {
     setShowLogsDrawer(true);
     setLogsLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/customers/${c.id}/notifications`, {
+      const res = await fetch(`${API_BASE_URL}/api/customers/${c.id}/notifications`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
