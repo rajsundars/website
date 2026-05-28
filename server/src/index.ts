@@ -23,7 +23,7 @@ import reportsRouter from "./routes/reports.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT: number = Number(process.env.PORT) || 5000;
 
 // Security Middlewares
 app.use(helmet());
