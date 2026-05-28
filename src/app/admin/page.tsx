@@ -223,7 +223,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {loading || !data ? (
+      {loading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 className="w-8 h-8 text-gold-500 animate-spin" />
           <p className="text-xs text-luxury-text-dark uppercase tracking-widest font-semibold">Consolidating system ledgers...</p>
@@ -231,6 +231,10 @@ export default function AdminDashboard() {
       ) : error ? (
         <div className="p-10 text-center text-rose-400 text-xs">
           {error}
+        </div>
+      ) : !data ? (
+        <div className="p-10 text-center text-rose-400 text-xs">
+          Unable to load dashboard data.
         </div>
       ) : (
         <>
