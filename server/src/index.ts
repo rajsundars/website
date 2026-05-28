@@ -27,8 +27,20 @@ const PORT = process.env.PORT || 5000;
 
 // Security Middlewares
 app.use(helmet());
+// Configure CORS to allow multiple frontend origins (including Vercel deployments)
+const rawFrontendUrls = process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "http://localhost:3000";
+const allowedOrigins = rawFrontendUrls.split(",").map(s => s.trim()).filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow server-to-server or same-origin requests
+    // Allow if explicitly configured
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow any vercel.app preview/deployment domains
+    if (origin.endsWith(".vercel.app")) return callback(null, true);
+    // Default: deny
+    return callback(new Error("CORS policy: origin not allowed - " + origin));
+  },
   credentials: true
 }));
 app.use(express.json());
