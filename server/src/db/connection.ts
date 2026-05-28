@@ -1,4 +1,3 @@
-import sqlite3 from "sqlite3";
 import pg from "pg";
 import dotenv from "dotenv";
 import path from "path";
@@ -12,56 +11,43 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const isPostgres = !!(process.env.DATABASE_URL || process.env.PGHOST);
+// Production requires PostgreSQL via DATABASE_URL
+if (!process.env.DATABASE_URL && !process.env.PGHOST) {
+  throw new Error(
+    "DATABASE_URL environment variable not set. Production requires PostgreSQL.\n" +
+    "Set DATABASE_URL or PGHOST/PGUSER/PGPASSWORD/PGDATABASE for connection."
+  );
+}
+
+const isPostgres = true; // Always use PostgreSQL in production
 
 let pgPool: pg.Pool | null = null;
-let sqliteDb: sqlite3.Database | null = null;
 
-if (isPostgres) {
+if (!pgPool) {
   pgPool = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.DATABASE_URL?.includes("localhost") ? false : { rejectUnauthorized: false }
   });
-  console.log("Database Mode: PostgreSQL Client Initialized.");
-} else {
-  const dbDir = path.resolve(__dirname, "../../");
-  if (!fs.existsSync(dbDir)) {
-    fs.mkdirSync(dbDir, { recursive: true });
-  }
-  const dbPath = path.join(dbDir, "guna_wines.db");
-  sqliteDb = new sqlite3.Database(dbPath);
-  console.log(`Database Mode: Local SQLite Initialized at ${dbPath}`);
+  console.log("Database Mode: PostgreSQL Pool Initialized.");
 }
 
-// Unified query wrapper
+// Unified query wrapper for PostgreSQL
 export function query(sql: string, params: any[] = []): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (isPostgres && pgPool) {
-      let pgSql = sql;
-      let count = 1;
-      while (pgSql.includes("?")) {
-        pgSql = pgSql.replace("?", `$${count++}`);
-      }
-      pgPool.query(pgSql, params, (err, res) => {
-        if (err) return reject(err);
-        resolve(res.rows);
-      });
-    } else if (sqliteDb) {
-      const isSelect = sql.trim().toUpperCase().startsWith("SELECT") || sql.trim().toUpperCase().startsWith("WITH");
-      if (isSelect) {
-        sqliteDb.all(sql, params, (err, rows) => {
-          if (err) return reject(err);
-          resolve(rows);
-        });
-      } else {
-        sqliteDb.run(sql, params, function(err) {
-          if (err) return reject(err);
-          resolve({ lastID: this.lastID, changes: this.changes });
-        });
-      }
-    } else {
-      reject(new Error("No active database connection found."));
+    if (!pgPool) {
+      return reject(new Error("Database pool not initialized"));
     }
+    
+    let pgSql = sql;
+    let count = 1;
+    while (pgSql.includes("?")) {
+      pgSql = pgSql.replace("?", `$${count++}`);
+    }
+    
+    pgPool.query(pgSql, params, (err, res) => {
+      if (err) return reject(err);
+      resolve(res.rows);
+    });
   });
 }
 

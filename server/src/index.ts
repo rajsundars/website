@@ -100,12 +100,18 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 async function startServer() {
   try {
+    console.log("Initializing database...");
     await initializeDatabase();
-    app.listen(PORT, () => {
-      console.log(`Guna Wines Backend Server running on port ${PORT}`);
+    console.log("Database initialized. Starting HTTP server...");
+    
+    // Bind to 0.0.0.0 (all interfaces) for cloud deployments
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`✓ Guna Wines Backend Server running on http://0.0.0.0:${PORT}`);
+      console.log(`  Health check: http://localhost:${PORT}/api/health`);
     });
   } catch (error) {
     console.error("Fatal Server Initialization Error:", error);
+    console.error("Stack:", (error as any).stack);
     process.exit(1);
   }
 }
